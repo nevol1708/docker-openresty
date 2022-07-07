@@ -50,13 +50,42 @@ ARG RESTY_CONFIG_OPTIONS="\
     --with-stream_ssl_module \
     --with-threads \
     "
-ARG RESTY_CONFIG_OPTIONS_MORE=""
+ARG RESTY_CONFIG_OPTIONS_MORE="\
+    --add-module=/tmp/modsecurity-nginx-v1.0.3 \
+    --add-module=/tmp/ngx_http_geoip2_module-3.4 \
+    "
 ARG RESTY_LUAJIT_OPTIONS="--with-luajit-xcflags='-DLUAJIT_NUMMODE=2 -DLUAJIT_ENABLE_LUA52COMPAT'"
 ARG RESTY_PCRE_OPTIONS="--with-pcre-jit"
 
 ARG RESTY_ADD_PACKAGE_BUILDDEPS=""
-ARG RESTY_ADD_PACKAGE_RUNDEPS=""
-ARG RESTY_EVAL_PRE_CONFIGURE=""
+ARG RESTY_ADD_PACKAGE_RUNDEPS="apt-utils autoconf automake git libcurl4-openssl-dev liblmdb-dev libpcre++-dev libtool libxml2-dev libyajl-dev pkgconf"
+ARG RESTY_EVAL_PRE_CONFIGURE="cd /tmp; \
+    curl -fSL https://github.com/maxmind/libmaxminddb/releases/download/1.6.0/libmaxminddb-1.6.0.tar.gz -o libmaxminddb-1.6.0.tar.gz; \
+    tar xzf libmaxminddb-1.6.0.tar.gz; \
+    cd /tmp/libmaxminddb-1.6.0; \
+    ./configure; \
+    make; \
+    make install; \
+    ldconfig; \
+    cd /tmp; \
+    curl -fSL https://github.com/SpiderLabs/ModSecurity/releases/download/v3.0.7/modsecurity-v3.0.7.tar.gz -o modsecurity-v3.0.7.tar.gz; \
+    tar xzf modsecurity-v3.0.7.tar.gz; \
+    cd modsecurity-v3.0.7; \
+    ./build.sh; \
+    ./configure; \
+    make; \
+    make install; \
+    mkdir /etc/modsecurity.d; \
+    cd /etc/modsecurity.d; \
+    curl -fSL https://raw.githubusercontent.com/SpiderLabs/ModSecurity/v3/master/modsecurity.conf-recommended -o modsecurity.conf; \
+    curl -fSL https://raw.githubusercontent.com/SpiderLabs/ModSecurity/v3/master/unicode.mapping -o unicode.mapping; \
+    curl -fSL https://raw.githubusercontent.com/coreruleset/modsecurity-crs-docker/master/src/etc/modsecurity.d/setup.conf -o setup.conf; \
+    cd /tmp; \
+    curl -fSL https://github.com/leev/ngx_http_geoip2_module/archive/refs/tags/3.4.tar.gz -o 3.4.tar.gz; \
+    tar xzf 3.4.tar.gz; \
+    curl -fSL https://github.com/SpiderLabs/ModSecurity-nginx/releases/download/v1.0.3/modsecurity-nginx-v1.0.3.tar.gz -o modsecurity-nginx-v1.0.3.tar.gz; \
+    tar xzf modsecurity-nginx-v1.0.3.tar.gz; \
+    "
 ARG RESTY_EVAL_POST_MAKE=""
 
 # These are not intended to be user-specified
