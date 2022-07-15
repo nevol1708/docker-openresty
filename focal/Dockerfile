@@ -57,8 +57,8 @@ ARG RESTY_CONFIG_OPTIONS_MORE="\
 ARG RESTY_LUAJIT_OPTIONS="--with-luajit-xcflags='-DLUAJIT_NUMMODE=2 -DLUAJIT_ENABLE_LUA52COMPAT'"
 ARG RESTY_PCRE_OPTIONS="--with-pcre-jit"
 
-ARG RESTY_ADD_PACKAGE_BUILDDEPS=""
-ARG RESTY_ADD_PACKAGE_RUNDEPS="apt-utils autoconf automake git libcurl4-openssl-dev liblmdb-dev libpcre++-dev libtool libxml2-dev libyajl-dev pkgconf"
+ARG RESTY_ADD_PACKAGE_BUILDDEPS="git"
+ARG RESTY_ADD_PACKAGE_RUNDEPS="apt-utils autoconf automake libcurl4-openssl-dev liblmdb-dev libpcre++-dev libtool libxml2-dev libyajl-dev pkgconf"
 ARG RESTY_EVAL_PRE_CONFIGURE="cd /tmp; \
     curl -fSL https://github.com/maxmind/libmaxminddb/releases/download/1.6.0/libmaxminddb-1.6.0.tar.gz -o libmaxminddb-1.6.0.tar.gz; \
     tar xzf libmaxminddb-1.6.0.tar.gz; \
@@ -86,7 +86,12 @@ ARG RESTY_EVAL_PRE_CONFIGURE="cd /tmp; \
     curl -fSL https://github.com/SpiderLabs/ModSecurity-nginx/releases/download/v1.0.3/modsecurity-nginx-v1.0.3.tar.gz -o modsecurity-nginx-v1.0.3.tar.gz; \
     tar xzf modsecurity-nginx-v1.0.3.tar.gz; \
     "
-ARG RESTY_EVAL_POST_MAKE=""
+ARG RESTY_EVAL_POST_MAKE="cd /tmp; \
+    rm -rf libmaxminddb-1.6.0.tar.gz libmaxminddb-1.6.0 \
+    rm -rf modsecurity-v3.0.7.tar.gz modsecurity-v3.0.7 \
+    rm -rf 3.4.tar.gz ngx_http_geoip2_module-3.4 \
+    rm -rf modsecurity-nginx-v1.0.3.tar.gz modsecurity-nginx-v1.0.3 \
+    "
 
 # These are not intended to be user-specified
 ARG _RESTY_CONFIG_DEPS="--with-pcre \
